@@ -39,7 +39,8 @@ function Homepage() {
   const [isBtnActive, setIsBtnActive] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandData, setExpandData] = useState({});
-
+  const [isFormActive, setIsFormActive] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const itemsPerPage = 10; // Change this to control the number of items per page
 
   // Pagination control handlers
@@ -75,6 +76,24 @@ function Homepage() {
       setCurrentPage(1);
     };
     fetchSearchResults();
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const movieName = event.target.movieName.value;
+    const date = event.target.date.value;
+    const time = event.target.time.value;
+    const tickets = event.target.tickets.value;
+
+    console.log(
+      `Booked ${tickets} tickets for ${movieName} on ${date} at ${time}`
+    );
+
+    setShowConfirmation(true);
+
+    setTimeout(() => {
+      setShowConfirmation(false);
+    }, 5000);
   };
 
   useEffect(() => {
@@ -145,7 +164,9 @@ function Homepage() {
         </div>
 
         <div
-          className={"expand-cover " + (isExpanded ? " cover-expanded" : "")}
+          className={
+            "expand-cover pb-5" + (isExpanded ? " cover-expanded" : "")
+          }
         >
           <div
             className={
@@ -168,7 +189,10 @@ function Homepage() {
               </div>
               <div
                 className="close-button close-expanded"
-                onClick={() => setIsExpanded(false)}
+                onClick={() => {
+                  setIsExpanded(false);
+                  setIsFormActive(false);
+                }}
               ></div>
             </div>
             <div className="content-body">
@@ -300,11 +324,74 @@ function Homepage() {
                   </div>
                 </section>
               </section>
-              <section className="extra-detail-section"></section>
             </div>
           </div>
         </div>
-
+        <div
+          className={
+            "open-form-btn button-86 " +
+            (isExpanded ? " open-form-btn-active" : " ")
+          }
+          onClick={() => setIsFormActive(true)}
+        >
+          Book Tickets
+        </div>
+        <div className={"overlay " + (isFormActive ? " active":"")}>
+          <div
+            className={
+              "book-form-container " + (isFormActive ? " book-form-active" : "")
+            }
+          >
+            <form className="book-form" onSubmit={handleSubmit}>
+              <div className="form-header">
+                <h2 className="fw-bold">
+                  Book <span>Tickets</span>
+                </h2>
+                <div
+                  type="button"
+                  className="close-button form-close-button"
+                  onClick={() => setIsFormActive(false)}
+                ></div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="movieName">Movie Name</label>
+                <input
+                  type="text"
+                  id="movieName"
+                  name="movieName"
+                  placeholder={expandData?.name}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="date">Date</label>
+                <input type="date" id="date" name="date" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="time">Time</label>
+                <input type="time" id="time" name="time" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="tickets">Number of Tickets</label>
+                <input
+                  type="number"
+                  id="tickets"
+                  name="tickets"
+                  min="1"
+                  required
+                />
+              </div>
+              <button type="submit" className="button-86 ms-auto me-auto">
+                Book Now
+              </button>
+            </form>
+            {showConfirmation && (
+              <div className="ticket-confirmation">
+                <div>Ticked Booked.</div>
+              </div>
+            )}
+          </div>
+        </div>
         <div className="movies-container">
           <table>
             <thead>
